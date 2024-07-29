@@ -1,0 +1,12 @@
+.header {
+}
+
+.header ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: red;
+  height: 2rem;
+  padding: 2rem 1.2rem;
+  border-radius: 5px;
+}
