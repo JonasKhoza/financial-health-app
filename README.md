@@ -31,8 +31,7 @@ A web app to assess and improve users' financial health. It provides a quiz to g
 ### Steps
 
 1. Clone the repository
-   ```sh
-   git clone https://github.com/yourusername/financial-health-assessment-app.git
+   git clone https://github.com/JonasKhoza/financial-health-app.git
 
 Install dependencies
 cd financial-health-app
