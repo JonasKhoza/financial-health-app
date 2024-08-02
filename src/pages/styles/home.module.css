@@ -56,6 +56,14 @@
   text-align: center;
 }
 
+.introduction h2 {
+  font-family: "Platypi", serif;
+  font-optical-sizing: auto;
+  font-weight: 1000;
+  font-size: 2rem;
+ 
+}
+
 .features {
   display: flex;
   justify-content: space-around;

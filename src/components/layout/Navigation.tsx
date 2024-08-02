@@ -27,7 +27,7 @@ const Navigation = () => {
         <p>
           <NavLink
             to="/"
-            className={({ isActive }) => (isActive ? c.active_tab : "")}
+            className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.has_scrolled : ""}`)}
           >
             FinHealth
           </NavLink>
@@ -38,15 +38,15 @@ const Navigation = () => {
           <li>
             <NavLink
               to="/dashboard"
-              className={({ isActive }) => (isActive ? c.active_tab : "")}
+              className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.has_scrolled : ""}`)}
             >
               My Dashboard
             </NavLink>
           </li>
           <li>
             <NavLink
-              to="/profile"
-              className={({ isActive }) => (isActive ? c.active_tab : "")}
+              to="/quiz"
+              className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.has_scrolled : ""}`)}
             >
               Financial Health Quiz
             </NavLink>
@@ -54,7 +54,7 @@ const Navigation = () => {
           <li>
             <NavLink
               to="/profile"
-              className={({ isActive }) => (isActive ? c.active_tab : "")}
+              className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.has_scrolled : ""}`)}
             >
               Profile
             </NavLink>
@@ -63,7 +63,7 @@ const Navigation = () => {
         <div className={c.sign_in_container}>
           <NavLink
             to="/auth"
-            className={({ isActive }) => (isActive ? c.active_tab : "")}
+            className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.user_scrolled : ""}`)}
           >
             Sign in
           </NavLink>

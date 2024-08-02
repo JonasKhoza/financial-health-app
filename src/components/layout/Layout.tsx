@@ -6,7 +6,7 @@ const Layout: React.FC<FC> = ({ children }) => {
   return (
     <>
       <Navigation />
-      <main>{children}</main>
+      <main >{children}</main>
       <Footer />
     </>
   );

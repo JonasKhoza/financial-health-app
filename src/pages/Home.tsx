@@ -1,33 +1,9 @@
-import React, { useEffect, useState } from "react";
 import c from "./styles/home.module.css";
 
 const HomePage: React.FC = () => {
-  // State to track if the header should have a different background color on scroll
-  const [scrolled, setScrolled] = useState(false);
-
-  const handleScroll = () => {
-    if (window.scrollY > 50) {
-      setScrolled(true);
-    } else {
-      setScrolled(false);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
     <div className={c.home_page}>
-      <header className={`${c.header} ${scrolled ? c.scrolled : ""}`}>
-        <div className={c.logo}>FinancialHealthApp</div>
-        <nav className={c.nav}>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-          <a href="#help">Help</a>
-        </nav>
-      </header>
       <section className={c.hero}>
         <h1>Assess and Improve Your Financial Health</h1>
         <p>Get personalized advice and track your financial progress.</p>
