@@ -1,11 +1,28 @@
+import { useEffect, useState } from "react";
+
 import { NavLink } from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
 
 import c from "./styles/navigation.module.css";
 
 const Navigation = () => {
+  // State to track if the header should have a different background color on scroll
+  const [scrolled, setScrolled] = useState(false);
+
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      setScrolled(true);
+    } else {
+      setScrolled(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className={c.navigation_header}>
+    <header className={`${c.navigation_header} ${scrolled ? c.scrolled : ""}`}>
       <div>
         <p>
           <NavLink
@@ -45,7 +62,7 @@ const Navigation = () => {
         </ul>
         <div className={c.sign_in_container}>
           <NavLink
-            to="/login"
+            to="/auth"
             className={({ isActive }) => (isActive ? c.active_tab : "")}
           >
             Sign in

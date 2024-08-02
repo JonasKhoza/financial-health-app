@@ -1,4 +1,21 @@
+/* Header */
+/* .header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: var(--header-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  background-color: var(--accent-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+} */
+
 .navigation_header {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6,6 +23,14 @@
   padding: 2rem 4.5rem;
   border-radius: 6px;
   box-shadow: 11px 33px 27px -18px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  box-sizing: border-box;
+}
+
+.navigation_header.scrolled {
+  background-color: var(--primary-color);
 }
 
 .navigation_header div p {

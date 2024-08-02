@@ -9,29 +9,34 @@ const Authentication = lazy(async () => {
   return { default: module.default };
 });
 
+const HomePage = lazy(async () => {
+  const module = await import("./pages/Home");
+  return { default: module.default };
+});
+
 function App() {
   return (
     <>
       <Layout>
         <Routes>
-          <Route path="/" element={<h1>Home</h1>} />
           <Route
-            path="/signup"
+            path="/"
+            element={
+              <Suspense fallback={<p>Loading</p>}>
+                <HomePage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/auth"
             element={
               <Suspense fallback={<p>Loading!</p>}>
                 <Authentication />
               </Suspense>
             }
           />
-          <Route path="/" element={<h1>Home</h1>} />
-          <Route
-            path="/signin"
-            element={
-              <Suspense fallback={<p>Loading!</p>}>
-                <Authentication />
-              </Suspense>
-            }
-          />
+          <Route path="/new" element={<h1>Route</h1>} />
+
           <Route path="/main" element={<h1>Main</h1>} />
           <Route path="/main2" element={<h1>Main</h1>} />
         </Routes>

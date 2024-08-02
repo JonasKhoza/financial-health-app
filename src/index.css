@@ -4,6 +4,16 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --background-color: #f8f9fa;
+  --accent-color: #e9ecef;
+  --text-color: #343a40;
+  --header-height: 60px;
+  --footer-height: 80px;
+}
+
 html {
   font-family: "Montserrat";
   font-style: normal;
@@ -11,7 +21,6 @@ html {
 }
 
 body {
-  margin: 0 2rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #fff;
