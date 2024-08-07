@@ -1,0 +1,14 @@
+.side_drawer {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: var(--size8);
+  left: -100%;
+  background-color: white;
+  margin: 0 auto;
+  color: var(--five-gray);
+  padding: 0 var(--size2);
+  z-index: 2000;
+  transition: 0.3s;
+}
