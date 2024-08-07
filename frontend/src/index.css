@@ -1,0 +1,45 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --background-color: #f8f9fa;
+  --accent-color: #e9ecef;
+  --text-color: #343a40;
+  --header-height: 60px;
+  --footer-height: 80px;
+  --token-e2bd9c10-2e84-4d57-8bf7-afff351afdf9: rgb(50, 61, 214);
+  --token-f2f9e1d1-25c4-4851-97cf-53f8a70f4955: rgb(1, 5, 66);
+  --token-1076c847-e752-492f-a011-57d46744308b: #FCFCFF;
+  --token-2df5134c-60a4-43ed-ad42-0fb962a570d0: #E1E2F6;
+  --token-d35ba7ee-9737-4c14-aee8-c5f62bfcf4e6: #F5F5FA;
+  --token-0af29c55-3112-4cd7-9821-5b763b4075a3: #1722BE;
+  --token-4cf6d4fb-1bf3-4203-afb7-4c0b8cf05f22: #CCCFF3;
+  --token-4e935513-eea2-483e-a926-20c20bf4020d: #FAFAFA;
+  --token-5342f28a-14a4-4cdc-b577-dc32e543b9c4: #F4F4F5;
+  --token-94cae313-2f7e-472b-a4be-b10fdc9f0e7e: #E4E4E7;
+  --token-89360695-7b27-41ef-b8c2-44ebe9eae181: #D4D4D8;
+  --token-5b7eeced-73e7-44a4-9fc7-d15ada5a513c: #A1A1AA;
+  --token-74178798-5dd9-4088-8d65-3d7476532830: #71717A;
+  --token-a6b56fac-d7eb-4f1c-8b8c-0c305331fc55: #52525B;
+  --token-4697c2e9-3a1c-49a8-a265-f86a48d864d3: #3F3F46;
+  --token-2d86b734-8c1e-40ae-9e47-58809df91f9a: #27272A;
+  --token-2954d5b1-45a6-4c56-ba74-b03a72c65400: #18181B;
+  --token-9445e37d-8723-4a3c-b7a3-d29207e8def1: rgb(9, 9, 11);
+}
+
+html {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 400;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color:#f5f5f5;
+}
