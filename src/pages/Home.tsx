@@ -1,17 +1,20 @@
+import { Link } from "react-router-dom";
 import c from "./styles/home.module.css";
 
 const HomePage: React.FC = () => {
-
   return (
     <div className={c.home_page}>
       <section className={c.hero}>
         <h1>Assess and Improve Your Financial Health</h1>
-        <p>Get personalized advice and track your financial progress.</p>
-        <a href="#quiz">
+        <p>
+          Get personalized advice powered by AI and track your financial
+          progress.
+        </p>
+        <Link to="/quiz">
           <button className={c.cta_button}>
             Start Your Financial Health Check
           </button>
-        </a>
+        </Link>
       </section>
       <section className={c.introduction}>
         <h2>Why Use Our App?</h2>
@@ -60,34 +63,6 @@ const HomePage: React.FC = () => {
           <cite>- Alex</cite>
         </div>
       </section>
-      <footer className={c.footer}>
-        <nav className={c.footer_nav}>
-          <a href="#privacy_policy">Privacy Policy</a>
-          <a href="#terms_of_service">Terms of Service</a>
-        </nav>
-        <div className={c.contact_info}>
-          <p>
-            Contact us:{" "}
-            <a href="mailto:support@example.com">support@example.com</a>
-          </p>
-        </div>
-        <div className={c.social_media}>
-          <a
-            href="https://facebook.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Facebook
-          </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Twitter
-          </a>
-        </div>
-      </footer>
     </div>
   );
 };

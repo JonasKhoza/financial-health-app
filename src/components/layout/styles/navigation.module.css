@@ -18,31 +18,28 @@
 }
 
 .navigation_header div p {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 900;
 }
 
 .navigation_header a {
   color: #4b4b4b;
   text-decoration: none;
-  
 }
 
 .navigation_header div p a {
   text-decoration: none;
 }
 
-
 .navigation_header a.has_scrolled {
   color: #2e2e2e;
 }
-
 
 .navigation_header .right_nav_container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12rem;
+  gap: 6rem;
   padding: 1rem 0;
 }
 
@@ -55,13 +52,11 @@
   border-radius: 5px;
 }
 
-
-
 .navigation_header ul li a {
   border-radius: 6px;
   padding: 5px;
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .navigation_header ul li a:hover {
@@ -80,16 +75,116 @@
 }
 
 .navigation_header .sign_in_container a.user_scrolled {
-background-color: #f5f1f1;
-color: #2e2e2e;
+  background-color: #f5f1f1;
+  color: #2e2e2e;
 }
 
 .navigation_header .sign_in_container a:hover {
   opacity: 0.8;
 }
 
-
 .active_tab {
   opacity: 0.7;
   box-shadow: 8px 28px 20px -3px rgba(0, 0, 0, 0.1);
-} 
+}
+
+.hamburger_menu {
+  display: none;
+}
+
+.side_drawer {
+  display: none;
+}
+
+@media screen and (max-width: 1200px) {
+  .hamburger_menu {
+    display: block;
+    margin-right: var(--size1);
+    cursor: pointer;
+  }
+
+  .hamburger_menu .closed_menu {
+    font-size: 2.2rem;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+
+  .icon {
+    transition: opacity 0.5s, transform 0.5s;
+  }
+
+  .icon_enter {
+    animation: fadeIn 0.5s forwards;
+  }
+
+  .icon_exit {
+    animation: fadeOut 0.5s forwards;
+  }
+
+  .navigation_header .right_nav_container {
+    display: none;
+  }
+
+  .side_drawer {
+    display: flex;
+    flex-direction: column;
+    padding: 4rem 0 0 7rem;
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 6rem;
+    left: -100%;
+    margin: 0 auto;
+    z-index: 2000;
+    transition: 0.3s;
+    background-color: #fff;
+  }
+
+  .side_drawer.active {
+    left: 0;
+  }
+
+  .side_drawer ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    list-style: none;
+  }
+
+  .side_drawer ul li a {
+    color: #1a314d;
+    text-decoration: none;
+    font: inherit;
+    font-weight: 600;
+    font-size: 1.3rem;
+  }
+
+  .side_drawer ul li a.active {
+    color: #03a;
+  }
+
+  .side_drawer ul li .log_out {
+    color: #1a314d;
+  }
+}

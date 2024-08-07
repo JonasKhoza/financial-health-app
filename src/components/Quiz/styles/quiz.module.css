@@ -1,66 +1,76 @@
-/* Quiz.css */
-
 .quiz_container {
-    max-width: 800px;
-    margin: auto;
-    padding: 2rem;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .question_container {
-    margin-bottom: 2rem;
-  }
-  
-  .question_container h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .options label {
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-  
-  input[type="range"] {
-    width: 100%;
-  }
-  
-  input[type="text"] {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-  }
-  
-  .nav_button, .submit_button {
-    background-color: #007bff;
-    color: #ffffff;
-    border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .nav_button:hover, .submit_button:hover {
-    background-color: #0056b3;
-  }
-  
-  .nav_button:active, .submit_button:active {
-    transform: scale(0.98);
-  }
-  
-  .progress {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 1rem;
-    color: #6c757d;
-  }
-  
+  max-width: 800px;
+  margin: auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.question_container {
+  margin-bottom: 2rem;
+}
+
+.question_container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.options label {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 0.5rem;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav_button,
+.submit_button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.nav_button:hover,
+.submit_button:hover {
+  background-color: #0056b3;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.progress {
+  text-align: center;
+}

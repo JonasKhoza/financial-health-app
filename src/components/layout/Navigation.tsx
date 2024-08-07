@@ -1,10 +1,22 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { NavLink } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 
 import c from "./styles/navigation.module.css";
 
-const Navigation = () => {
+interface NavInterface {
+  menuIsOpen: boolean;
+  toggleMenuBar: () => void;
+  isAnimating: boolean;
+}
+
+const Navigation: React.FC<NavInterface> = ({
+  menuIsOpen,
+  toggleMenuBar,
+  isAnimating,
+}) => {
   // State to track if the header should have a different background color on scroll
   const [scrolled, setScrolled] = useState(false);
 
@@ -27,7 +39,12 @@ const Navigation = () => {
         <p>
           <NavLink
             to="/"
-            className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.has_scrolled : ""}`)}
+            className={({ isActive }) =>
+              `${isActive ? c.active_tab : ""} ${
+                scrolled ? c.has_scrolled : ""
+              }`
+            }
+            onClick={toggleMenuBar}
           >
             FinHealth
           </NavLink>
@@ -38,7 +55,11 @@ const Navigation = () => {
           <li>
             <NavLink
               to="/dashboard"
-              className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.has_scrolled : ""}`)}
+              className={({ isActive }) =>
+                `${isActive ? c.active_tab : ""} ${
+                  scrolled ? c.has_scrolled : ""
+                }`
+              }
             >
               My Dashboard
             </NavLink>
@@ -46,7 +67,11 @@ const Navigation = () => {
           <li>
             <NavLink
               to="/quiz"
-              className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.has_scrolled : ""}`)}
+              className={({ isActive }) =>
+                `${isActive ? c.active_tab : ""} ${
+                  scrolled ? c.has_scrolled : ""
+                }`
+              }
             >
               Financial Health Quiz
             </NavLink>
@@ -54,7 +79,11 @@ const Navigation = () => {
           <li>
             <NavLink
               to="/profile"
-              className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.has_scrolled : ""}`)}
+              className={({ isActive }) =>
+                `${isActive ? c.active_tab : ""} ${
+                  scrolled ? c.has_scrolled : ""
+                }`
+              }
             >
               Profile
             </NavLink>
@@ -63,11 +92,30 @@ const Navigation = () => {
         <div className={c.sign_in_container}>
           <NavLink
             to="/auth"
-            className={({ isActive }) => (`${isActive ? c.active_tab : ""} ${scrolled ? c.user_scrolled : ""}`)}
+            className={({ isActive }) =>
+              `${isActive ? c.active_tab : ""} ${
+                scrolled ? c.user_scrolled : ""
+              }`
+            }
           >
             Sign in
           </NavLink>
         </div>
+      </div>
+      <div className={c.hamburger_menu} onClick={toggleMenuBar}>
+        {!menuIsOpen ? (
+          <MenuIcon
+            className={`${c.closed_menu} ${c.icon} ${
+              isAnimating ? c.icon_exit : c.icon_enter
+            }`}
+          />
+        ) : (
+          <CloseIcon
+            className={`${c.closed_menu} ${c.icon} ${
+              isAnimating ? c.icon_exit : c.icon_enter
+            }`}
+          />
+        )}
       </div>
     </header>
   );
