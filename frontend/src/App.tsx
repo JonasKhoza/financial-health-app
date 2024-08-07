@@ -14,10 +14,15 @@ const HomePage = lazy(async () => {
   return { default: module.default };
 });
 
-const FinancialHealthQuiz = lazy(async ()=> {
-  const module = await import("./pages/FinancialHealthQuiz")
-  return {default: module.default}
-})
+const FinancialHealthQuiz = lazy(async () => {
+  const module = await import("./pages/FinancialHealthQuiz");
+  return { default: module.default };
+});
+
+const Profile = lazy(async () => {
+  const module = await import("./pages/Profile");
+  return { default: module.default };
+});
 
 function App() {
   return (
@@ -40,9 +45,23 @@ function App() {
               </Suspense>
             }
           />
-          <Route path="/quiz" element={<Suspense fallback={<p>Loading....</p>}><FinancialHealthQuiz/></Suspense>} />
+          <Route
+            path="/quiz"
+            element={
+              <Suspense fallback={<p>Loading....</p>}>
+                <FinancialHealthQuiz />
+              </Suspense>
+            }
+          />
 
-          <Route path="/main" element={<h1>Main</h1>} />
+          <Route
+            path="/profile"
+            element={
+              <Suspense fallback={<p>Loading....</p>}>
+                <Profile />
+              </Suspense>
+            }
+          />
           <Route path="/main2" element={<h1>Main</h1>} />
         </Routes>
       </Layout>
