@@ -1,6 +1,11 @@
 import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
+
+//Routes imports
+import quizRouter from "./routes/quiz.routes";
+import userRoutes from "./routes/user.routes";
+
 dotenv.config();
 
 const app = express();
@@ -16,11 +21,9 @@ allowing for complex objects and arrays to be encoded in the URL-encoded format*
 
 app.use(express.json()); //to parse incoming requests with JSON payloads.
 
-app.get("/", (req: Request, res: Response) => {
-  res.json({
-    "1": "Success",
-  });
-});
+//Routes
+app.use("/quiz", quizRouter);
+app.use("/users", userRoutes);
 
 const config = {
   port: process.env.PORT || 8000,
