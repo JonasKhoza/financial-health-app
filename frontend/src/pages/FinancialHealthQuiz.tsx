@@ -3,28 +3,26 @@ import c from "./styles/financial_health_quiz.module.css";
 import { Button } from "@mui/material";
 import Quiz from "../components/Quiz/Quiz";
 import { useNavigate } from "react-router-dom";
+import { SERVER_URL } from "../utils/server.utils";
 
 const FinancialHealthQuiz: React.FC = () => {
   const [startQuiz, setStartQuiz] = useState(false);
   const [resumeQuiz, setResumeQuiz] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [hasProfile, setHasProfile] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasProfile, setHasProfile] = useState(false);
   const [ready, setReady] = useState(false);
 
-  const Navigation = useNavigate();
+  const navigation = useNavigate();
 
   // if (query["v"] = "profile"){
   //   setProfile = true;
   // }
 
   const handleStartQuiz = () => {
-    if (!isLoggedIn) {
-      return Navigation("/auth?v=signin");
-    }
+    if (!isLoggedIn) return navigation("/auth?v=signin");
 
-    if (!hasProfile) {
-      return Navigation("/profile?set=profile");
-    }
+    if (!hasProfile) return navigation("/profile?set=profile");
+
     // Redirect to the quiz page or start the quiz
     setStartQuiz(true);
     setResumeQuiz(false);
@@ -44,10 +42,18 @@ const FinancialHealthQuiz: React.FC = () => {
   };
 
   //Move this to an app wide state
-  function getQuizData(answers: any) {
+  async function getQuizData(answers: any) {
     console.log("Submitting answers:", answers);
     //Server processing here
+    const res = await fetch(`${SERVER_URL}/quiz`, {
+      method: "POST",
+      body: JSON.stringify(answers),
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
 
+    const data = await res.json();
+    console.log(data);
     //
   }
 

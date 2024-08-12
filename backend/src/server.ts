@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
+import cors from "cors";
 
 //Routes imports
 import quizRouter from "./routes/quiz.routes";
@@ -9,6 +10,15 @@ import userRoutes from "./routes/user.routes";
 dotenv.config();
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:3000", //Specifies which origin is allowed. "*" means any
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    methods: ["GET", "POST", "PUT", "DELETE"], // Specifies the allowed HTTP methods, in this case "*"
+    allowedHeaders: ["Content-Type", "Authorization"], // Specify the allowed headers
+  })
+);
 
 app.use(cookieParser()); //allows to easily parse and manipulate HTTP cookies in your Express application.
 app.disable("x-powered-by"); //makes it more difficult for users to see that I am using Express

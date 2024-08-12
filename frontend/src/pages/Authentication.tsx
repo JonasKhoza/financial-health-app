@@ -8,10 +8,18 @@ import {
   UserAuthI,
   UserAuthInterface,
 } from "../models/Authentication/Auth.model";
+import { SERVER_URL } from "../utils/server.utils";
 
 const Authentication = () => {
-  function getUserAuthenticationData(userData: UserAuthI) {
-    console.log(userData);
+  async function getUserAuthenticationData(userData: UserAuthI) {
+    const res = await fetch(`${SERVER_URL}/users/auth`, {
+      method: "POST",
+      body: JSON.stringify(userData),
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+    const data = await res.json();
+    console.log(data);
   }
 
   return (

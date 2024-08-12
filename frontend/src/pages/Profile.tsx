@@ -2,9 +2,21 @@ import React from "react";
 import Form from "../components/Profile/Form";
 import styles from "./styles/profile.module.css";
 import { ProfileDataInterface } from "../models/Profile/Profile.models";
+import { SERVER_URL } from "../utils/server.utils";
 
-function getUserProfileData(userProfile: ProfileDataInterface) {
-  console.log(userProfile);
+async function getUserProfileData(userProfile: ProfileDataInterface) {
+  //TURN THIS INTO A CUSTOM HOOK
+  const res = await fetch(`${SERVER_URL}/users/auth/profile`, {
+    method: "POST",
+    body: JSON.stringify(userProfile),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  console.log(data);
 }
 
 const Profile = () => {
