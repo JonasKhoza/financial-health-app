@@ -38,7 +38,7 @@ const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: "http://localhost:3000", //Specifies which origin is allowed. "*" means any
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-    methods: ["GET", "POST", "PUT", "DELETE"], // Specifies the allowed HTTP methods, in this case "*"
+    methods: ["GET", "POST", "PUT", "DELETE"], // Specifies the allowed HTTP methods, "*" for all
     allowedHeaders: ["Content-Type", "Authorization"], // Specify the allowed headers
 }));
 app.use((0, cookie_parser_1.default)()); //allows to easily parse and manipulate HTTP cookies in your Express application.
@@ -49,7 +49,7 @@ express_1.default.urlencoded({
 When extended is set to true, the values can be of any type,
 allowing for complex objects and arrays to be encoded in the URL-encoded format*/
 app.use(express_1.default.json()); //to parse incoming requests with JSON payloads.
-//Routes
+//Routes registration
 app.use("/quiz", quiz_routes_1.default);
 app.use("/users", user_routes_1.default);
 const config = {

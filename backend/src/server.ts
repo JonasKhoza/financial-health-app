@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
 import cors from "cors";
@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: "http://localhost:3000", //Specifies which origin is allowed. "*" means any
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-    methods: ["GET", "POST", "PUT", "DELETE"], // Specifies the allowed HTTP methods, in this case "*"
+    methods: ["GET", "POST", "PUT", "DELETE"], // Specifies the allowed HTTP methods, "*" for all
     allowedHeaders: ["Content-Type", "Authorization"], // Specify the allowed headers
   })
 );
@@ -31,7 +31,7 @@ allowing for complex objects and arrays to be encoded in the URL-encoded format*
 
 app.use(express.json()); //to parse incoming requests with JSON payloads.
 
-//Routes
+//Routes registration
 app.use("/quiz", quizRouter);
 app.use("/users", userRoutes);
 

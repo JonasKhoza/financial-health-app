@@ -1,8 +1,16 @@
+export interface UserAuthInterface {
+  username?: string;
+  email?: string;
+  password: string;
+}
+
 interface ProfileDataInterface {
+  _id?: string;
   salutation: string;
   firstName: string;
   lastName: string;
   username: string;
+  phone: string;
 }
 
 class Profile {

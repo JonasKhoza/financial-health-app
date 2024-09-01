@@ -1,15 +1,34 @@
 import { Router, Request, Response } from "express";
 
+import {
+  createUserAccount,
+  createUserProfile,
+  signinUserUser,
+} from "../controllers/users.controllers";
+import validateContentType from "../middlewares/contentTypeValidator";
+import { applicationJson } from "../utils/contentType";
+import {
+  signinDataValidatorArr,
+  signupValidatorArr,
+} from "../utils/validateAuthData";
+import verifyUserAuthentication from "../middlewares/verifyUserAuthStatus";
+
 const router = Router();
 
-router.post("/auth", (req: Request, res: Response) => {
-  res
-    .status(200)
-    .json({ success: "Successfully hit the endpoint.", data: req.body });
-});
+router.post(
+  "/auth/signup",
+  signupValidatorArr,
+  validateContentType(applicationJson),
+  createUserAccount
+);
 
-router.post("/auth/profile", (req: Request, res: Response) => {
-  res.status(200).json({ success: "Profiles path", data: req.body });
-});
+router.post(
+  "/auth/signin",
+  signinDataValidatorArr,
+  validateContentType(applicationJson),
+  signinUserUser
+);
+
+router.post("/auth/profile", verifyUserAuthentication, createUserProfile);
 
 export default router;
