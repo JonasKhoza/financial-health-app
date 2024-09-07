@@ -9,6 +9,8 @@ export default function responseHelper(res: Response, err: any) {
       message: err.message,
     };
 
-    res.status(err.code).json(new ResponseStructure(false, null, null, error));
+    return res
+      .status(err.code)
+      .json(new ResponseStructure(false, null, null, error));
   }
 }

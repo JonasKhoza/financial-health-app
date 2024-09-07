@@ -30,6 +30,17 @@ const express_1 = __importDefault(require("express"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+// // Query using a connection from the pool
+// const getUsers = async () => {
+//   const client = await pool.connect(); // Borrow a connection
+//   try {
+//     const res = await client.query('SELECT * FROM users');
+//     return res.rows;
+//   } finally {
+//     client.release(); // Return the connection to the pool
+//   }
+// };
+// getUsers().then(console.log).catch(console.error);
 //Routes imports
 const quiz_routes_1 = __importDefault(require("./routes/quiz.routes"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));

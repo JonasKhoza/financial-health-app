@@ -7,6 +7,10 @@ const signupValidatorArr = [
     .trim()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long!"),
+  body("username")
+    .trim()
+    .isAlphanumeric()
+    .withMessage("Username must be alphanurmeric!"),
 ];
 
 const signinDataValidatorArr = [

@@ -7,7 +7,9 @@ function responseHelper(res, err) {
             code: err.code,
             message: err.message,
         };
-        res.status(err.code).json(new response_model_1.ResponseStructure(false, null, null, error));
+        return res
+            .status(err.code)
+            .json(new response_model_1.ResponseStructure(false, null, null, error));
     }
 }
 exports.default = responseHelper;

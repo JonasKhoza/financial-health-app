@@ -14,14 +14,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUserProfile = exports.signinUserUser = exports.createUserAccount = void 0;
 const bcrypt_1 = require("bcrypt");
+const express_validator_1 = require("express-validator");
 const response_model_1 = require("../models/response.model");
 const responseHelper_1 = __importDefault(require("../utils/responseHelper"));
-const express_validator_1 = require("express-validator");
 const expressValidatorHelper_1 = __importDefault(require("../utils/expressValidatorHelper"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
+const dbConfig_1 = __importDefault(require("../utils/dbConfig"));
 function createUserAccount(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        let client = null; // Explicitly type client
         try {
+            //Connection to the database
+            client = yield dbConfig_1.default.connect(); //Get a client from the pool
+            if (!client) {
+                // Handle the case where the client could not be obtained
+                throw new response_model_1.CustomError("Failed to obtain a client from the pool", 500);
+            }
             //Validate user data and provides an error response
             const errors = (0, express_validator_1.validationResult)(req);
             const error = (0, expressValidatorHelper_1.default)(errors);
@@ -30,22 +38,35 @@ function createUserAccount(req, res) {
                     .status(400)
                     .json(new response_model_1.ResponseStructure(false, null, null, error));
             }
-            const { email, password } = req.body;
-            if (!errors.isEmpty()) {
-                return res
-                    .status(400)
-                    .json(new response_model_1.ResponseStructure(false, null, null, error));
-            }
+            //Extract user data
+            const { email, password, username } = req.body;
+            const queryText = `
+          SELECT * FROM users WHERE email = $1
+    `;
             //Check if user already exists in the database
-            // const existingUser =
-            //if error, use custom error and throw the error
+            const existingUser = yield client.query(queryText, [email]);
+            if (existingUser.rows.length > 0) {
+                throw new response_model_1.CustomError("User already exists!", 409);
+            }
+            const results = yield client.query(`SELECT username FROM users WHERE username ILIKE $1`, [username]);
+            if (results.rows.length > 0) {
+                throw new response_model_1.CustomError("Username is already taken!", 409);
+            }
             //Hash the password
             const hashedPassword = yield (0, bcrypt_1.hash)(password, Number(process.env.P_HASH_KEY)); //takes  1s
             //Save data to the database
+            yield client.query(`INSERT INTO users(email, password, username) VALUES($1, $2, $3)`, [email, hashedPassword, username]);
             res.status(201).json(new response_model_1.ResponseStructure(true));
         }
         catch (err) {
-            (0, responseHelper_1.default)(res, err);
+            console.log(err);
+            return (0, responseHelper_1.default)(res, err);
+        }
+        finally {
+            if (client) {
+                // Return the connection to the pool
+                client.release();
+            }
         }
     });
 }
@@ -94,30 +115,26 @@ function signinUserUser(req, res) {
             res.status(200).json(new response_model_1.ResponseStructure(true));
         }
         catch (error) {
-            (0, responseHelper_1.default)(res, error);
+            return (0, responseHelper_1.default)(res, error);
         }
     });
 }
 exports.signinUserUser = signinUserUser;
 function createUserProfile(req, res) {
-    const profileData = {
-        salutation: req.body.salutation,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        username: req.body.username,
-        phone: req.body.phone,
-    };
-    //Send data to the database
-    //Provide a response
-    res.status(201).json(new response_model_1.ResponseStructure(true));
     try {
+        const profileData = {
+            salutation: req.body.salutation,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            username: req.body.username,
+            phone: req.body.phone,
+        };
+        //Send data to the database
+        //Provide a response
+        return res.status(201).json(new response_model_1.ResponseStructure(true));
     }
     catch (error) {
-        const response = new response_model_1.ResponseStructure(false, null, null, {
-            code: 501,
-            message: "Something went wrong in the server whilst creating profile!",
-        });
-        res.status(501).json(response);
+        return (0, responseHelper_1.default)(res, error);
     }
 }
 exports.createUserProfile = createUserProfile;

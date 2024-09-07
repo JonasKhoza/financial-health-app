@@ -9,6 +9,10 @@ const signupValidatorArr = [
         .trim()
         .isLength({ min: 6 })
         .withMessage("Password must be at least 6 characters long!"),
+    (0, express_validator_1.body)("username")
+        .trim()
+        .isAlphanumeric()
+        .withMessage("Username must be alphanurmeric!"),
 ];
 exports.signupValidatorArr = signupValidatorArr;
 const signinDataValidatorArr = [

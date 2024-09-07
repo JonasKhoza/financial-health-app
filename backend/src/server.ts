@@ -3,6 +3,19 @@ import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
 import cors from "cors";
 
+// // Query using a connection from the pool
+// const getUsers = async () => {
+//   const client = await pool.connect(); // Borrow a connection
+//   try {
+//     const res = await client.query('SELECT * FROM users');
+//     return res.rows;
+//   } finally {
+//     client.release(); // Return the connection to the pool
+//   }
+// };
+
+// getUsers().then(console.log).catch(console.error);
+
 //Routes imports
 import quizRouter from "./routes/quiz.routes";
 import userRoutes from "./routes/user.routes";
