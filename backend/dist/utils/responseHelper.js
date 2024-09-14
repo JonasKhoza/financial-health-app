@@ -11,5 +11,16 @@ function responseHelper(res, err) {
             .status(err.code)
             .json(new response_model_1.ResponseStructure(false, null, null, error));
     }
+    else {
+        console.log(err, err === null || err === void 0 ? void 0 : err.error);
+        const error = {
+            code: 500,
+            message: "Something went wrong in our servers!",
+            details: err === null || err === void 0 ? void 0 : err.error,
+        };
+        return res
+            .status(500)
+            .json(new response_model_1.ResponseStructure(false, null, null, error));
+    }
 }
 exports.default = responseHelper;

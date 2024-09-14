@@ -61,8 +61,8 @@ When extended is set to true, the values can be of any type,
 allowing for complex objects and arrays to be encoded in the URL-encoded format*/
 app.use(express_1.default.json()); //to parse incoming requests with JSON payloads.
 //Routes registration
-app.use("/quiz", quiz_routes_1.default);
-app.use("/users", user_routes_1.default);
+app.use("/v1/quizzes", quiz_routes_1.default);
+app.use("/v1/users", user_routes_1.default);
 const config = {
     port: process.env.PORT || 8000,
 };

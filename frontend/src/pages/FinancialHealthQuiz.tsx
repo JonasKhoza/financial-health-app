@@ -8,8 +8,8 @@ import { SERVER_URL } from "../utils/server.utils";
 const FinancialHealthQuiz: React.FC = () => {
   const [startQuiz, setStartQuiz] = useState(false);
   const [resumeQuiz, setResumeQuiz] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [hasProfile, setHasProfile] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [hasProfile, setHasProfile] = useState(true);
   const [ready, setReady] = useState(false);
 
   const navigation = useNavigate();
@@ -45,16 +45,16 @@ const FinancialHealthQuiz: React.FC = () => {
   async function getQuizData(answers: any) {
     console.log("Submitting answers:", answers);
     //Server processing here
-    const res = await fetch(`${SERVER_URL}/quiz`, {
-      method: "POST",
-      body: JSON.stringify(answers),
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    // const res = await fetch(`${SERVER_URL}/quiz`, {
+    //   method: "POST",
+    //   body: JSON.stringify(answers),
+    //   headers: { "Content-Type": "application/json" },
+    //   credentials: "include",
+    // });
 
-    const data = await res.json();
-    console.log(data);
-    //
+    // const data = await res.json();
+    // console.log(data);
+    // //
   }
 
   return (

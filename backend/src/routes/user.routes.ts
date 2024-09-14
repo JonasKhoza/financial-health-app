@@ -3,11 +3,12 @@ import { Router, Request, Response } from "express";
 import {
   createUserAccount,
   createUserProfile,
-  signinUserUser,
+  signinUser,
 } from "../controllers/users.controllers";
 import validateContentType from "../middlewares/contentTypeValidator";
 import { applicationJson } from "../utils/contentType";
 import {
+  profileDataValidatorArr,
   signinDataValidatorArr,
   signupValidatorArr,
 } from "../utils/validateAuthData";
@@ -26,9 +27,15 @@ router.post(
   "/auth/signin",
   signinDataValidatorArr,
   validateContentType(applicationJson),
-  signinUserUser
+  signinUser
 );
 
-router.post("/auth/profile", verifyUserAuthentication, createUserProfile);
+router.post(
+  "/auth/profile",
+  verifyUserAuthentication, // Authentication middleware first
+  profileDataValidatorArr, // Validation middleware after authentication
+  validateContentType(applicationJson),
+  createUserProfile // Final handler
+);
 
 export default router;

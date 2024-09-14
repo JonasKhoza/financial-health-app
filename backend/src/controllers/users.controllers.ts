@@ -3,14 +3,17 @@ import { Request, Response } from "express";
 import { hash, compare } from "bcrypt";
 import { validationResult } from "express-validator";
 import { PoolClient } from "pg";
+import { JwtPayload } from "jsonwebtoken";
 
-import { ProfileDataInterface } from "../models/user.models";
 import { CustomError, ResponseStructure } from "../models/response.model";
 import responseHelper from "../utils/responseHelper";
-
 import expressValidatorHelper from "../utils/expressValidatorHelper";
 import generateUserToken from "../utils/generateToken";
 import pool from "../utils/dbConfig";
+
+interface CustomRequest extends Request {
+  userData?: JwtPayload;
+}
 
 async function createUserAccount(req: Request, res: Response) {
   let client: PoolClient | null = null; // Explicitly type client
@@ -61,7 +64,7 @@ async function createUserAccount(req: Request, res: Response) {
 
     //Save data to the database
     await client.query(
-      `INSERT INTO users(email, password, username) VALUES($1, $2, $3)`,
+      `INSERT INTO users(email, password, username) VALUES($1, $2, $3);`,
       [email, hashedPassword, username]
     );
 
@@ -70,42 +73,62 @@ async function createUserAccount(req: Request, res: Response) {
     console.log(err);
     return responseHelper(res, err);
   } finally {
-    if (client) {
-      // Return the connection to the pool
-      client.release();
-    }
+    // Return the connection to the pool
+    client?.release();
   }
 }
 
-async function signinUserUser(req: Request, res: Response) {
+async function signinUser(req: Request, res: Response) {
+  let client: PoolClient | null = null; // Explicitly type client
   try {
+    //Check if a user is already logged in
+    const hasAccessToken = req.cookies?.accessToken;
+    const hasRefreshToken = req.cookies?.refreshToken;
+
+    if (hasAccessToken || hasRefreshToken) {
+      throw new CustomError("User is already logged in!", 400);
+    }
+
+    //Create a client
+    client = await pool.connect(); //Get a client from the pool
+    if (!client) {
+      // Handle the case where the client could not be obtained
+      throw new CustomError("Something went wrong in our servers!", 500);
+    }
     //Validate user data and provides an error response
     const errors = validationResult(req);
     const error = expressValidatorHelper(errors);
+
+    const { username, password } = req.body;
+
     if (!errors.isEmpty()) {
       return res
         .status(400)
         .json(new ResponseStructure(false, null, null, error));
     }
+    const queryText = `SELECT _id, username, password FROM users WHERE username ILIKE $1`;
+    //Check if username exist in DB
+    const existingUsername = await client.query(queryText, [username]);
+    if (existingUsername.rows.length <= 0) {
+      throw new CustomError(
+        "User not found. Please enter valid credentials!",
+        404
+      );
+    }
 
-    const { username, password } = req.body;
+    //Compare the provided password hash with existing hash
+    const user = existingUsername.rows[0]; // Get the first row(object) from the result
 
-    // //Check if username exist in DB
-    // const existingUserQuery = null; //findOne(email)
-    // // const existingUser:UserAuthI = await null; //existingUserQuery.exec()
+    const { _id, username: dbUsername, password: dbHashedPassword } = user; // Destructure to extract fields
+    const isPasswordMatch = await compare(password, dbHashedPassword);
 
-    // if (existingUser == null) {
-    //   throw new CustomError("User not found. Please enter valid credentials!", 404);
-    // }
-    // //Compare the provided password hash with existing hash
-    // const isPasswordMatch = await compare(password, existingUser.password);
+    if (!isPasswordMatch) {
+      throw new CustomError("Invalid credentials. Please try again!", 401);
+    }
 
-    // if (!isPasswordMatch) {
-    //   throw new CustomError("Incorrect password. Please enter valid credentials!", 401);
-    // }
     const { accessToken, refreshToken } = generateUserToken({
-      _id: "",
-      username,
+      _id,
+      username: dbUsername,
     });
 
     res.cookie("accessToken", accessToken, {
@@ -124,30 +147,63 @@ async function signinUserUser(req: Request, res: Response) {
       httpOnly: true,
     });
 
-    res.status(200).json(new ResponseStructure(true));
+    return res.status(200).json(new ResponseStructure(true, { accessToken }));
   } catch (error) {
     return responseHelper(res, error);
+  } finally {
+    client?.release(); //Return connection to the pool
   }
 }
 
-function createUserProfile(req: Request, res: Response) {
+async function createUserProfile(req: CustomRequest, res: Response) {
+  console.log("Route hit!");
+  let client: PoolClient | null = null;
   try {
-    const profileData: ProfileDataInterface = {
-      salutation: req.body.salutation,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      username: req.body.username,
-      phone: req.body.phone,
-    };
+    //Validate the provided data
+    const errors = validationResult(req);
+    const error = expressValidatorHelper(errors);
 
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json(new ResponseStructure(false, null, null, error));
+    }
+
+    const { salutation, firstName, lastName, phone } = req.body;
+
+    client = await pool.connect();
+    if (!client) {
+      throw new CustomError("Something went wrong in our servers!", 500);
+    }
+
+    const userData = req.userData;
+
+    //Check if a user already has a profile
+    const userProfile = await client.query(
+      `SELECT user_id FROM profiles WHERE user_id = $1`,
+      [userData?._id]
+    );
+
+    if (userProfile.rows.length > 0) {
+      throw new CustomError("User already has a profile!", 409);
+    }
+
+    const queryText = `INSERT INTO profiles(salutation, first_name, last_name, phone, user_id) VALUES($1, $2, $3, $4, $5);`;
     //Send data to the database
-
+    await client.query(queryText, [
+      salutation,
+      firstName,
+      lastName,
+      phone,
+      userData?._id,
+    ]);
     //Provide a response
-
     return res.status(201).json(new ResponseStructure(true));
   } catch (error) {
     return responseHelper(res, error);
+  } finally {
+    client?.release();
   }
 }
 
-export { createUserAccount, signinUserUser, createUserProfile };
+export { createUserAccount, signinUser, createUserProfile };

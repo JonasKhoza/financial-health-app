@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import { jwtUserPayload } from "../models/authentication.models";
 
 function generateUserToken(userData: jwtUserPayload) {
-  console.log(process.env.ACCESS_TOKEN_KEY);
   // Generate access token (short-lived)
   const accessToken = jwt.sign(userData, process.env.ACCESS_TOKEN_KEY!, {
     expiresIn: "15m", // Access token valid for 15 minutes

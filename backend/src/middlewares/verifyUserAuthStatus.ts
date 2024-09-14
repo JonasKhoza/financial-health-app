@@ -1,100 +1,454 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomError } from "../models/response.model";
 import responseHelper from "../utils/responseHelper";
 
-function verifyUserAuthentication(
-  req: Request,
+interface CustomRequest extends Request {
+  userData?: JwtPayload;
+}
+export default function verifyUserAuthentication(
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) {
-  const accessToken = req.cookies?.accessToken;
-  const refreshToken = req.cookies?.refreshToken;
   try {
+    const accessToken = req.cookies?.accessToken;
+    const refreshToken = req.cookies?.refreshToken;
+    console.log(`The tokens: ${accessToken} and ${refreshToken}`);
     if (!accessToken && !refreshToken) {
       throw new CustomError("Unauthorized user. Please sign in!", 401);
     }
 
-    // Verify Access Token
-    if (accessToken) {
-      jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY!, (err: any) => {
-        if (err) {
-          // Access Token is invalid or expired, fallback to refresh token
-          return handleRefreshToken(req, res, next, refreshToken);
-        }
-        // Access Token is valid, proceed to the next middleware
-        return next();
-      });
-    } else {
-      // No Access Token, fallback to refresh token
-      return handleRefreshToken(req, res, next, refreshToken);
-    }
+    let decodedToken;
 
-    //Implement additional security measures like IP address or device fingerprinting for refresh tokens.
+    if (accessToken) jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY!); //If the token is invalid or expired: It throws an error.
+
+    if (refreshToken)
+      decodedToken = jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_KEY!
+      ) as JwtPayload;
+
+    req.userData = decodedToken;
+    return next();
   } catch (error) {
-    return responseHelper(res, error);
+    responseHelper(res, error);
+    return;
   }
 }
 
-function handleRefreshToken(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-  refreshToken: string
-) {
-  try {
-    if (!refreshToken) {
-      throw new CustomError("Unauthorized user. Please sign in!", 401);
-    }
+// async function verifyUserAuthentication(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   try {
+//     const accessToken = req.cookies?.accessToken;
+//     const refreshToken = req.cookies?.refreshToken;
 
-    jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_KEY!,
-      (err, userData: any) => {
-        if (err) {
-          throw new CustomError("Unauthorized user. Please sign in!", 401);
-        }
+//     if (!accessToken && !refreshToken) {
+//       console.log("This is hit");
+//       throw new CustomError("Unauthorized user. Please sign in!", 401);
+//     }
 
-        // Issue new Access Token
-        const newAccessToken = jwt.sign(
-          userData,
-          process.env.ACCESS_TOKEN_KEY!,
-          {
-            expiresIn: "15m",
-          }
-        );
+//     //Verify Access Token
+//     if (accessToken) {
+//       jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY!, (err: any) => {
+//         if (err) {
+//           if (refreshToken) {
+//             jwt.verify(
+//               refreshToken,
+//               process.env.REFRESH_TOKEN_KEY!,
+//               (err: any, userData: any) => {
+//                 if (err) {
+//                   throw new CustomError(
+//                     "Unauthorized user. Please sign in!",
+//                     401
+//                   );
+//                 }
+//                 console.log("We do get the user here");
+//                 const { _id, username } = userData;
+//                 // Issue new Access Token
+//                 const newAccessToken = jwt.sign(
+//                   { _id, username },
+//                   process.env.ACCESS_TOKEN_KEY!,
+//                   {
+//                     expiresIn: "15m",
+//                   }
+//                 );
+//                 //Set the new accessToken
+//                 res.cookie("accessToken", newAccessToken, {
+//                   maxAge: 15 * 60 * 1000, //15 minutes in milliseconds
+//                   path: "/",
+//                   sameSite: "lax",
+//                   secure: false,
+//                   httpOnly: true,
+//                 });
+//               }
+//             );
+//           }
+//         }
+//         // Access Token is valid, proceed to the next middleware
+//         console.log("We are here");
+//         return next();
+//       });
 
-        // Optionally, issue a new Refresh Token (Token Rotation)
-        const newRefreshToken = jwt.sign(
-          userData,
-          process.env.REFRESH_TOKEN_KEY!,
-          {
-            expiresIn: "7d",
-          }
-        );
+//       console.log("We do reach here");
+//     } else {
+//       if (refreshToken) {
+//         jwt.verify(
+//           refreshToken,
+//           process.env.REFRESH_TOKEN_KEY!,
+//           (err: any, userData: any) => {
+//             if (err) {
+//               console.log("We do throw an error");
+//               throw new CustomError("Unauthorized user. Please sign in!", 401);
+//             }
 
-        res.cookie("accessToken", newAccessToken, {
-          maxAge: 15 * 60 * 1000, //15 minutes in millisenconds
-          path: "/",
-          sameSite: "lax",
-          secure: false,
-          httpOnly: true,
-        });
+//             const { _id, username } = userData;
+//             // Issue new Access Token
+//             const newAccessToken = jwt.sign(
+//               { _id, username },
+//               process.env.ACCESS_TOKEN_KEY!,
+//               {
+//                 expiresIn: "15m",
+//               }
+//             );
 
-        res.cookie("refreshToken", newRefreshToken, {
-          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-          path: "/",
-          sameSite: "lax",
-          secure: false,
-          httpOnly: true,
-        });
+//             console.log(newAccessToken);
+//             //Set the new accessToken
+//             // res.cookie("accessToken", newAccessToken, {
+//             //   maxAge: 15 * 60 * 1000, //15 minutes in milliseconds
+//             //   path: "/",
+//             //   sameSite: "lax",
+//             //   secure: false,
+//             //   httpOnly: true,
+//             // });
+//           }
+//         );
+//         console.log("We are now here");
+//         next();
+//       }
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     return responseHelper(res, error);
+//   }
+// }
 
-        return next();
-      }
-    );
-  } catch (error) {
-    return responseHelper(res, error);
-  }
-}
+// export default verifyUserAuthentication;
 
-export default verifyUserAuthentication;
+// function verifyUserAuthentication(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   console.log("Authentication middleware!");
+//   console.log(req.cookies);
+//   const accessToken = req.cookies?.accessToken;
+//   const refreshToken = req.cookies?.refreshToken;
+//   try {
+//     if (!accessToken && !refreshToken) {
+//       throw new CustomError("Unauthorized user. Please sign in!", 401);
+//     }
+
+//     // Verify Access Token
+//     if (accessToken) {
+//       console.log("We're in here!");
+//       jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY!, (err: any) => {
+//         if (err) {
+//           // Access Token is invalid or expired, fallback to refresh token
+//           handleRefreshToken(req, res, next, refreshToken);
+//         }
+//         // Access Token is valid, proceed to the next middleware
+//         return next();
+//       });
+//     } else {
+//       console.log("We're in the other place");
+//       // No Access Token, fallback to refresh token
+//       handleRefreshToken(req, res, next, refreshToken);
+//     }
+
+//     //Implement additional security measures like IP address or device fingerprinting for refresh tokens.
+//   } catch (error) {
+//     return responseHelper(res, error);
+//   }
+// }
+
+// function handleRefreshToken(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+//   refreshToken: string
+// ) {
+//   try {
+//     if (!refreshToken) {
+//       throw new CustomError("Unauthorized user. Please sign in!", 401);
+//     }
+
+//     jwt.verify(
+//       refreshToken,
+//       process.env.REFRESH_TOKEN_KEY!,
+//       (err, userData: any) => {
+//         if (err) {
+//           throw new CustomError("Unauthorized user. Please sign in!", 401);
+//         }
+
+//         const { _id, username } = userData;
+//         // Issue new Access Token
+//         const newAccessToken = jwt.sign(
+//           { _id, username },
+//           process.env.ACCESS_TOKEN_KEY!,
+//           {
+//             expiresIn: "15m",
+//           }
+//         );
+
+//         // Optionally, issue a new Refresh Token (Token Rotation)
+//         const newRefreshToken = jwt.sign(
+//           { _id, username },
+//           process.env.REFRESH_TOKEN_KEY!,
+//           {
+//             expiresIn: "7d",
+//           }
+//         );
+
+//         res.cookie("accessToken", newAccessToken, {
+//           maxAge: 15 * 60 * 1000, //15 minutes in millisenconds
+//           path: "/",
+//           sameSite: "lax",
+//           secure: false,
+//           httpOnly: true,
+//         });
+
+//         res.cookie("refreshToken", newRefreshToken, {
+//           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+//           path: "/",
+//           sameSite: "lax",
+//           secure: false,
+//           httpOnly: true,
+//         });
+//       }
+//     );
+//     return next();
+//   } catch (error) {
+//     return responseHelper(res, error);
+//   }
+// }
+
+// export default verifyUserAuthentication;
+// import { NextFunction, Request, Response } from "express";
+// import jwt from "jsonwebtoken";
+// import { CustomError } from "../models/response.model";
+// import responseHelper from "../utils/responseHelper";
+
+// async function verifyUserAuthentication(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   console.log("Authentication middleware!");
+//   const accessToken = req.cookies?.accessToken;
+//   const refreshToken = req.cookies?.refreshToken;
+
+//   if (!accessToken && !refreshToken) {
+//     // No tokens present, send response and stop further execution
+//     return responseHelper(
+//       res,
+//       new CustomError("Unauthorized user. Please sign in!", 401)
+//     );
+//   }
+
+//   if (accessToken) {
+//     jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY!, async (err: any) => {
+//       if (err) {
+//         // Access Token expired or invalid, fallback to refresh token
+//         return await handleRefreshToken(req, res, next, refreshToken);
+//       }
+//       // Access Token is valid, proceed to the next middleware
+//       return next();
+//     });
+//   } else {
+//     // No Access Token, fallback to refresh token
+//     return await handleRefreshToken(req, res, next, refreshToken);
+//   }
+// }
+
+// async function handleRefreshToken(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+//   refreshToken: string
+// ) {
+//   if (!refreshToken) {
+//     return responseHelper(
+//       res,
+//       new CustomError("Unauthorized user. Please sign in!", 401)
+//     );
+//   }
+
+//   jwt.verify(
+//     refreshToken,
+//     process.env.REFRESH_TOKEN_KEY!,
+//     (err, userData: any) => {
+//       if (err) {
+//         // Refresh Token is invalid, send response
+//         return responseHelper(
+//           res,
+//           new CustomError("Unauthorized user. Please sign in!", 401)
+//         );
+//       }
+
+//       console.log(userData);
+//       `{
+//   _id: 'f8566ec5-3537-48a3-b0a9-c10a6cfd1b40',
+//   username: 'john',
+//   iat: 1726061227,
+//   exp: 1726666027
+// }`;
+//       const { _id, username } = userData;
+
+//       // Issue new Access Token and Refresh Token
+//       const newAccessToken = jwt.sign(
+//         { _id, username },
+//         process.env.ACCESS_TOKEN_KEY!,
+//         {
+//           expiresIn: "15m",
+//         }
+//       );
+//       const newRefreshToken = jwt.sign(
+//         { _id, username },
+//         process.env.REFRESH_TOKEN_KEY!,
+//         { expiresIn: "7d" }
+//       );
+
+//       // Set cookies for both tokens
+//       res.cookie("accessToken", newAccessToken, {
+//         maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
+//         path: "/",
+//         sameSite: "lax",
+//         secure: false,
+//         httpOnly: true,
+//       });
+
+//       res.cookie("refreshToken", newRefreshToken, {
+//         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+//         path: "/",
+//         sameSite: "lax",
+//         secure: false,
+//         httpOnly: true,
+//       });
+
+//       // Proceed to the next middleware after refreshing tokens
+//       return next();
+//     }
+//   );
+// }
+
+// export default verifyUserAuthentication;
+
+// import { NextFunction, Request, Response } from "express";
+// import jwt from "jsonwebtoken";
+// import { CustomError } from "../models/response.model";
+// import responseHelper from "../utils/responseHelper";
+
+// async function verifyUserAuthentication(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   console.log("Authentication middleware!");
+
+//   const accessToken = req.cookies?.accessToken;
+//   const refreshToken = req.cookies?.refreshToken;
+
+//   // If no accessToken and refreshToken, send response and stop further execution
+//   if (!accessToken && !refreshToken) {
+//     return responseHelper(
+//       res,
+//       new CustomError("Unauthorized user. Please sign in!", 401)
+//     );
+//   }
+
+//   if (accessToken) {
+//     // Verify Access Token
+//     jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY!, (err: any) => {
+//       if (err) {
+//         // Access Token expired or invalid, handle refresh
+//         handleRefreshToken(req, res, next, refreshToken);
+//       } else {
+//         // Access Token valid, proceed to the next middleware
+//         next();
+//       }
+//     });
+//   } else {
+//     // No Access Token, fallback to refresh token
+//     handleRefreshToken(req, res, next, refreshToken);
+//   }
+// }
+
+// async function handleRefreshToken(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+//   refreshToken: string
+// ) {
+//   // If no refresh token, respond with unauthorized
+//   if (!refreshToken) {
+//     return responseHelper(
+//       res,
+//       new CustomError("Unauthorized user. Please sign in!", 401)
+//     );
+//   }
+
+//   // Verify the Refresh Token
+//   jwt.verify(
+//     refreshToken,
+//     process.env.REFRESH_TOKEN_KEY!,
+//     (err: any, userData: any) => {
+//       if (err) {
+//         // Invalid Refresh Token, send error response
+//         return responseHelper(
+//           res,
+//           new CustomError("Unauthorized user. Please sign in!", 401)
+//         );
+//       }
+
+//       const { _id, username } = userData;
+
+//       // Issue new tokens
+//       const newAccessToken = jwt.sign(
+//         { _id, username },
+//         process.env.ACCESS_TOKEN_KEY!,
+//         { expiresIn: "15m" }
+//       );
+//       const newRefreshToken = jwt.sign(
+//         { _id, username },
+//         process.env.REFRESH_TOKEN_KEY!,
+//         { expiresIn: "7d" }
+//       );
+
+//       // Set new cookies
+//       res.cookie("accessToken", newAccessToken, {
+//         maxAge: 15 * 60 * 1000, // 15 minutes
+//         path: "/",
+//         sameSite: "lax",
+//         secure: false,
+//         httpOnly: true,
+//       });
+
+//       res.cookie("refreshToken", newRefreshToken, {
+//         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+//         path: "/",
+//         sameSite: "lax",
+//         secure: false,
+//         httpOnly: true,
+//       });
+
+//       // Proceed to the next middleware only after refreshing tokens
+//       return next();
+//     }
+//   );
+// }
+
+// export default verifyUserAuthentication;
